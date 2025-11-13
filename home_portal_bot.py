@@ -52,66 +52,6 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-def handle_message(text: str, update: Update, context: ContextTypes.DEFAULT_TYPE) -> str:
-    result = ask_with_function_calling(context.user_data, text)
-
-    context.user_data["previous_message"] = text
-    context.user_data["previous_result"] = result
-    return result
-
-
-async def ask_ai_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    if context.user_data.get("password") != config_helper.CHATBOT_ACCESS_PASSWORD:
-        await commands.help_command(update, context)
-        return
-
-    text = update.message.text
-
-    audio: Voice | Audio | None = update.message.audio or update.message.voice
-    if not text and audio:
-        file: File = await context.bot.get_file(audio)
-        bytes_array: bytearray = await file.download_as_bytearray()
-        bytes_type = bytes(bytes_array)
-        byteio = io.BytesIO(bytes_array)
-        byteio.name = "file.oga"
-
-        text = openai_conversation_helper.transcribe_voice_message(bytes_type)
-        print("Transcribed text:", text)
-
-    response = handle_message(text, update, context)
-    await update.message.reply_text(response)
-
-
-async def with_document_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    if context.user_data.get("password") != config_helper.CHATBOT_ACCESS_PASSWORD:
-        await commands.help_command(update, context)
-        return
-
-    text = update.message.text
-
-    document: Document | None = update.message.document
-
-    file: File = await context.bot.get_file(document)
-
-    file_path: Path = await file.download_to_drive(custom_path=document.file_name)
-    file_streams = [open(file_path, "rb")]
-    vector_store_id = get_vector_store_id(context.user_data)
-
-    file_batch: VectorStoreFileBatch = openai_conversation_helper.client.beta.vector_stores.file_batches.upload_and_poll(
-        vector_store_id=vector_store_id, files=file_streams
-    )
-    logger.debug(f"File batch upload result: {file_batch}")
-    if file_batch.file_counts.failed > 0:
-        response = "Ошибка загрузки файла"
-    elif text:
-        response = handle_message(text, update, context)
-    else:
-        response = "Файл успешно загружен"
-
-    await update.message.reply_text(response)
-
-
-
 # https://github.com/python-telegram-bot/python-telegram-bot/blob/master/examples/persistentconversationbot.py
 def main() -> None:
 
@@ -138,9 +78,7 @@ def main() -> None:
     application.add_error_handler(commands.error_handler)
 
     # on non command i.e message
-    application.add_handler(MessageHandler(filters.Document.APPLICATION | filters.Document.TEXT, with_document_command))
-    application.add_handler(MessageHandler(filters.TEXT | filters.AUDIO | filters.VOICE, ask_ai_command))
-    # application.add_handler(MessageHandler(filters.AUDIO & ~filters.COMMAND, ask_ai_voice_command))
+    application.add_handler(MessageHandler(~filters.COMMAND, commands.help_command))
 
     # Run the bot until the user presses Ctrl-C
     application.run_polling()

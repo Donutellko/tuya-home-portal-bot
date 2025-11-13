@@ -16,8 +16,8 @@ DEBUG_PERSISTENCE_CLEAR = "debug_persistence_clear"
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send a message when the command /help is issued."""
     reply_text = """
-    Используй /login TOKEN, чтобы авторизироваться.
-    Используй /open, чтобы открыть дверь.
+Используй /login TOKEN, чтобы авторизироваться.
+Используй /open, чтобы открыть дверь.
     """
 
     await update.message.reply_text(reply_text)

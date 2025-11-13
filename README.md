@@ -1,8 +1,8 @@
 # How to run:
 
 ```shell
-cp config_example.yaml config.yaml
-vi config.yaml  # and fill in your data
+cp config.ini.example config.ini
+vi config.ini  # and fill in your data
 ```
 
 ```sh
@@ -20,8 +20,8 @@ python3 -m venv ./venv
 Create file `/etc/systemd/system/my_home_portal_bot.service` with the following content (change `<path_to>`):
 ```
 [Service]
-WorkingDirectory=/home/user/<path_to>/home-portal-bot/
-ExecStart=/home/user/<path_to>/home-portal-bot/venv/bin/python home_portal_bot.py
+WorkingDirectory=/home/user/<path_to>/tuya-home-portal-bot/
+ExecStart=/home/user/<path_to>/tuya-home-portal-bot/venv/bin/python home_portal_bot.py
 
 User=root
 
