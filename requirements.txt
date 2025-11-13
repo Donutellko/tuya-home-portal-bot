@@ -1,0 +1,8 @@
+python-telegram-bot==20.1
+pytz==2022.7.1
+requests==2.28.2
+schedule==1.1.0
+# tuya-connector-python
+tuya-iot-py-sdk==0.6.6
+tuya-connector-python==0.1.2
+tinytuya==1.17.2

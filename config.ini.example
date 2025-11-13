@@ -1,0 +1,13 @@
+[tokens]
+
+telegram-token = 12345:AAAAAA
+
+tuya-smart-client-id = abc123
+tuya-smart-secret = def456
+tuya-smart-project-code = ghi789
+
+tuya-smart-device-id = jkl012
+tuya-smart-home-owner-id = mno345
+tuya-smart-scene-id = prs678
+
+bot-access-password = secret-word
