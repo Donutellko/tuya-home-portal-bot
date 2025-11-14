@@ -6,6 +6,7 @@ print(config.sections())
 TOKENS = config["tokens"]
 
 BOT_ACCESS_PASSWORD = TOKENS["bot-access-password"]
+TELEGRAM_BOT_ADMIN_CHAT_ID = TOKENS.get("bot-admin-chat-id", None)
 
 TELEGRAM_TOKEN = TOKENS["telegram-token"]
 

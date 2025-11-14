@@ -34,14 +34,28 @@ async def login_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
 
 
 async def open_portal_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    user_name = f"{update.message.from_user.first_name} (@{update.message.from_user.username})"
+    is_admin = str(update.message.chat_id) == config_helper.TELEGRAM_BOT_ADMIN_CHAT_ID
+
     if context.user_data['password'] == config_helper.BOT_ACCESS_PASSWORD:
         success, response = await tuya_helper.open_portal()
+
         if success:
             await update.message.reply_text("Сим-сим, откройся!")
+            if not is_admin:
+                await message_admin(context, message=f"Тем временем {user_name} открыл дверь.")
         else:
-            await update.message.reply_text("Не получилось :( " + str(response))
+            await update.message.reply_text("Не получилось :( ")
+            await message_admin(context,
+                                "Тем временем у " + user_name + " не получилось открыть дверь: " + str(response))
     else:
         await update.message.reply_text("Сначала авторизируйся с помощью /login TOKEN")
+        await message_admin(context, "Тем временем " + user_name + " пытался открыть дверь без авторизации.")
+
+
+async def message_admin(context: ContextTypes.DEFAULT_TYPE, message: str) -> None:
+    if config_helper.TELEGRAM_BOT_ADMIN_CHAT_ID is not None:
+        await context.bot.send_message(chat_id=config_helper.TELEGRAM_BOT_ADMIN_CHAT_ID, text=message)
 
 
 async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -67,6 +81,7 @@ async def persistence_command(update: Update, context: ContextTypes.DEFAULT_TYPE
     await update.message.reply_text(
         "Current persistence state: \n" + str(context.user_data)
     )
+
 
 async def persistence_clear_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send message containing current persistence state."""

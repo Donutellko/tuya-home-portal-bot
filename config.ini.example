@@ -11,3 +11,5 @@ tuya-smart-home-owner-id = mno345
 tuya-smart-scene-id = prs678
 
 bot-access-password = secret-word
+# Optional setting for notifying admin via Telegram
+bot-admin-chat-id = 123456789
