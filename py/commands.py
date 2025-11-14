@@ -37,7 +37,7 @@ async def open_portal_command(update: Update, context: ContextTypes.DEFAULT_TYPE
     user_name = f"{update.message.from_user.first_name} (@{update.message.from_user.username})"
     is_admin = str(update.message.chat_id) == config_helper.TELEGRAM_BOT_ADMIN_CHAT_ID
 
-    if context.user_data['password'] == config_helper.BOT_ACCESS_PASSWORD:
+    if context.user_data.get('password') == config_helper.BOT_ACCESS_PASSWORD:
         success, response = await tuya_helper.open_portal()
 
         if success:
